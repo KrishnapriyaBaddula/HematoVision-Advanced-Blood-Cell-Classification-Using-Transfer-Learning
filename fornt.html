@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HemaToVision - Blood Cell Classification System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background: white;
+            border-radius: 15px;
+            padding: 15px 25px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .nav-btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .nav-btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 5px 15px;
+            background: #f0f0ff;
+            border-radius: 25px;
+        }
+
+        /* Auth Forms */
+        .auth-container {
+            max-width: 500px;
+            margin: 50px auto;
+        }
+
+        .auth-card {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-header h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .auth-footer a {
+            color: #667eea;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Main App (Hidden until logged in) */
+        .main-app {
+            display: none;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-area:hover {
+            background: #f0f0ff;
+            border-color: #764ba2;
+        }
+
+        .upload-area i {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        #imagePreview {
+            max-width: 100%;
+            max-height: 300px;
+            margin-top: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            margin-top: 10px;
+        }
+
+        .result {
+            margin-top: 20px;
+        }
+
+        .prediction {
+            background: #f0f0ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .prediction h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .confidence-bar {
+            background: #e0e0e0;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .confidence-fill {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: bold;
+            transition: width 0.5s;
+        }
+
+        .probability-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .prob-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .features {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .feature {
+            background: white;
+            padding: 8px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .feature-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .feature-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .notes {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            font-size: 12px;
+        }
+
+        .patient-info {
+            background: #e8f0fe;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .patient-info h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .patient-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .edit-patient-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            .navbar {
+                flex-direction: column;
+            }
+            .patient-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        // ============ CONFIGURATION ============
+        const API_URL = 'http://localhost:8000';
+        
+        // Storage keys
+        const STORAGE_KEYS = {
+            USERS: 'hemetovision_users',
+            CURRENT_USER: 'hemetovision_current_user',
+            CURRENT_PATIENT: 'hemetovision_current_patient'
+        };
+
+        // ============ INITIALIZE STORAGE ============
+        function initializeStorage() {
+            if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
+                // Create default users
+                const defaultUsers = {
+                    'admin@hemetovision.com': {
+                        email: 'admin@hemetovision.com',
+                        password: 'admin123',
+                        name: 'Admin User',
+                        role: 'admin',
+                        createdAt: new Date().toISOString()
+                    },
+                    'doctor@hospital.com': {
+                        email: 'doctor@hospital.com',
+                        password: 'doctor123',
+                        name: 'Dr. Sarah Wilson',
+                        role: 'doctor',
+                        createdAt: new Date().toISOString()
+                    }
+                };
+                localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(defaultUsers));
+            }
+        }
+
+        // ============ AUTHENTICATION FUNCTIONS ============
+        function signUp(email, password, name) {
+            const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS));
+            
+            if (users[email]) {
+                return { success: false, message: 'Email already registered! Please sign in.' };
+            }
+            
+            users[email] = {
+                email: email,
+                password: password,
+                name: name,
+                role: 'user',
+                createdAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+            return { success: true, message: 'Account created successfully! Please sign in.' };
+        }
+
+        function signIn(email, password) {
+            const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS));
+            const user = users[email];
+            
+            if (!user) {
+                return { success: false, message: 'Email not found! Please create an account.' };
+            }
+            
+            if (user.password !== password) {
+                return { success: false, message: 'Incorrect password! Please try again.' };
+            }
+            
+            // Store current user (without password for security)
+            const { password: _, ...userWithoutPassword } = user;
+            localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(userWithoutPassword));
+            return { success: true, message: 'Login successful!', user: userWithoutPassword };
+        }
+
+        function signOut() {
+            localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+            localStorage.removeItem(STORAGE_KEYS.CURRENT_PATIENT);
+            renderApp();
+        }
+
+        function getCurrentUser() {
+            const user = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
+            return user ? JSON.parse(user) : null;
+        }
+
+        // ============ PATIENT MANAGEMENT FUNCTIONS ============
+        function savePatientDetails(patientData) {
+            localStorage.setItem(STORAGE_KEYS.CURRENT_PATIENT, JSON.stringify(patientData));
+        }
+
+        function getCurrentPatient() {
+            const patient = localStorage.getItem(STORAGE_KEYS.CURRENT_PATIENT);
+            return patient ? JSON.parse(patient) : null;
+        }
+
+        function clearPatientDetails() {
+            localStorage.removeItem(STORAGE_KEYS.CURRENT_PATIENT);
+        }
+
+        // ============ RENDER FUNCTIONS ============
+        
+        // Render Sign In Page
+        function renderSignIn(errorMessage = '') {
+            return `
+                <div class="auth-container">
+                    <div class="auth-card">
+                        <div class="auth-header">
+                            <h2><i class="fas fa-microscope"></i> HemaToVision</h2>
+                            <p>Sign in to access the blood cell classification system</p>
+                        </div>
+                        ${errorMessage ? `<div class="error-message">${errorMessage}</div>` : ''}
+                        <form id="signinForm">
+                            <div class="form-group">
+                                <label>Email Address</label>
+                                <input type="email" id="signinEmail" required placeholder="doctor@hospital.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Password</label>
+                                <input type="password" id="signinPassword" required placeholder="Enter your password">
+                            </div>
+                            <button type="submit" class="auth-btn">Sign In</button>
+                        </form>
+                        <div class="auth-footer">
+                            Don't have an account? <a onclick="showSignUp()">Create New Account</a>
+                        </div>
+                        <div class="auth-footer" style="margin-top: 10px; font-size: 12px;">
+                            <strong>Demo Accounts:</strong><br>
+                            admin@hemetovision.com / admin123<br>
+                            doctor@hospital.com / doctor123
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render Sign Up Page
+        function renderSignUp(errorMessage = '') {
+            return `
+                <div class="auth-container">
+                    <div class="auth-card">
+                        <div class="auth-header">
+                            <h2><i class="fas fa-user-plus"></i> Create Account</h2>
+                            <p>Join HemaToVision for advanced blood cell analysis</p>
+                        </div>
+                        ${errorMessage ? `<div class="error-message">${errorMessage}</div>` : ''}
+                        <form id="signupForm">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" id="signupName" required placeholder="Dr. John Doe">
+                            </div>
+                            <div class="form-group">
+                                <label>Email Address</label>
+                                <input type="email" id="signupEmail" required placeholder="doctor@hospital.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Password</label>
+                                <input type="password" id="signupPassword" required placeholder="Create a password (min 6 characters)">
+                            </div>
+                            <div class="form-group">
+                                <label>Confirm Password</label>
+                                <input type="password" id="signupConfirmPassword" required placeholder="Confirm your password">
+                            </div>
+                            <button type="submit" class="auth-btn">Create Account</button>
+                        </form>
+                        <div class="auth-footer">
+                            Already have an account? <a onclick="showSignIn()">Sign In</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render Patient Details Form
+        function renderPatientDetails() {
+            const currentPatient = getCurrentPatient();
+            
+            return `
+                <div class="auth-container">
+                    <div class="auth-card">
+                        <div class="auth-header">
+                            <h2><i class="fas fa-user-md"></i> Patient Information</h2>
+                            <p>Enter patient details for this analysis session</p>
+                        </div>
+                        <form id="patientForm">
+                            <div class="form-group">
+                                <label>Patient Name *</label>
+                                <input type="text" id="patientName" required value="${currentPatient?.name || ''}" placeholder="Enter patient full name">
+                            </div>
+                            <div class="form-group">
+                                <label>Age *</label>
+                                <input type="number" id="patientAge" required value="${currentPatient?.age || ''}" placeholder="Patient age">
+                            </div>
+                            <div class="form-group">
+                                <label>Gender *</label>
+                                <select id="patientGender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Male" ${currentPatient?.gender === 'Male' ? 'selected' : ''}>Male</option>
+                                    <option value="Female" ${currentPatient?.gender === 'Female' ? 'selected' : ''}>Female</option>
+                                    <option value="Other" ${currentPatient?.gender === 'Other' ? 'selected' : ''}>Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Blood Group</label>
+                                <select id="patientBloodGroup">
+                                    <option value="">Select Blood Group</option>
+                                    <option value="A+" ${currentPatient?.bloodGroup === 'A+' ? 'selected' : ''}>A+</option>
+                                    <option value="A-" ${currentPatient?.bloodGroup === 'A-' ? 'selected' : ''}>A-</option>
+                                    <option value="B+" ${currentPatient?.bloodGroup === 'B+' ? 'selected' : ''}>B+</option>
+                                    <option value="B-" ${currentPatient?.bloodGroup === 'B-' ? 'selected' : ''}>B-</option>
+                                    <option value="AB+" ${currentPatient?.bloodGroup === 'AB+' ? 'selected' : ''}>AB+</option>
+                                    <option value="AB-" ${currentPatient?.bloodGroup === 'AB-' ? 'selected' : ''}>AB-</option>
+                                    <option value="O+" ${currentPatient?.bloodGroup === 'O+' ? 'selected' : ''}>O+</option>
+                                    <option value="O-" ${currentPatient?.bloodGroup === 'O-' ? 'selected' : ''}>O-</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Clinical Notes / Symptoms</label>
+                                <textarea id="patientNotes" rows="3" placeholder="Enter any relevant clinical notes or symptoms">${currentPatient?.notes || ''}</textarea>
+                            </div>
+                            <button type="submit" class="auth-btn">Continue to Analysis</button>
+                        </form>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render Main Application
+        function renderMainApp() {
+            const currentUser = getCurrentUser();
+            const currentPatient = getCurrentPatient();
+            
+            return `
+                <div class="container">
+                    <div class="navbar">
+                        <div class="logo">
+                            <i class="fas fa-microscope"></i> HemaToVision
+                        </div>
+                        <div class="nav-links">
+                            <div class="user-info">
+                                <i class="fas fa-user-circle"></i>
+                                <span>${currentUser?.name || currentUser?.email}</span>
+                            </div>
+                            <button class="nav-btn nav-btn-secondary" onclick="editPatientDetails()">
+                                <i class="fas fa-user-edit"></i> Edit Patient
+                            </button>
+                            <button class="nav-btn nav-btn-secondary" onclick="signOut()">
+                                <i class="fas fa-sign-out-alt"></i> Sign Out
+                            </button>
+                        </div>
+                    </div>
+
+                    ${currentPatient ? `
+                        <div class="patient-info">
+                            <h4><i class="fas fa-hospital-user"></i> Current Patient</h4>
+                            <div class="patient-details">
+                                <div><strong>Name:</strong> ${currentPatient.name}</div>
+                                <div><strong>Age:</strong> ${currentPatient.age} years</div>
+                                <div><strong>Gender:</strong> ${currentPatient.gender}</div>
+                                <div><strong>Blood Group:</strong> ${currentPatient.bloodGroup || 'Not specified'}</div>
+                            </div>
+                            ${currentPatient.notes ? `<div style="margin-top: 10px;"><strong>Notes:</strong> ${currentPatient.notes}</div>` : ''}
+                        </div>
+                    ` : ''}
+
+                    <div class="main-content">
+                        <div class="card">
+                            <h2><i class="fas fa-upload"></i> Upload Image</h2>
+                            <div class="upload-area" id="uploadArea">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Click or Drag & Drop blood cell image here</p>
+                                <small>Supports: JPG, PNG, WEBP</small>
+                                <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                            </div>
+                            <img id="imagePreview" alt="Preview">
+                            <button class="btn" id="classifyBtn" disabled>
+                                <i class="fas fa-chart-line"></i> Classify Blood Cell
+                            </button>
+                            <button class="btn btn-secondary" id="clearBtn">
+                                <i class="fas fa-trash"></i> Clear
+                            </button>
+                        </div>
+
+                        <div class="card">
+                            <h2><i class="fas fa-chart-bar"></i> Classification Results</h2>
+                            <div id="results">
+                                <div style="text-align: center; padding: 40px; color: #999;">
+                                    <i class="fas fa-robot" style="font-size: 48px; margin-bottom: 10px;"></i>
+                                    <p>Upload an image and click classify</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="status" id="status">
+                        <i class="fas fa-circle" style="color: #e74c3c; font-size: 10px;"></i> Checking server...
+                    </div>
+                </div>
+            `;
+        }
+
+        // ============ MAIN RENDER FUNCTION ============
+        function renderApp() {
+            const currentUser = getCurrentUser();
+            const appDiv = document.getElementById('app');
+            
+            if (!currentUser) {
+                // Show sign in page
+                appDiv.innerHTML = renderSignIn();
+                attachSignInEvents();
+            } else {
+                const currentPatient = getCurrentPatient();
+                if (!currentPatient) {
+                    // Show patient details form
+                    appDiv.innerHTML = renderPatientDetails();
+                    attachPatientFormEvents();
+                } else {
+                    // Show main application
+                    appDiv.innerHTML = renderMainApp();
+                    attachMainAppEvents();
+                    checkServer();
+                }
+            }
+        }
+
+        // ============ EVENT ATTACHMENT FUNCTIONS ============
+        
+        function attachSignInEvents() {
+            const form = document.getElementById('signinForm');
+            if (form) {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('signinEmail').value;
+                    const password = document.getElementById('signinPassword').value;
+                    
+                    const result = signIn(email, password);
+                    if (result.success) {
+                        renderApp();
+                    } else {
+                        const appDiv = document.getElementById('app');
+                        appDiv.innerHTML = renderSignIn(result.message);
+                        attachSignInEvents();
+                    }
+                });
+            }
+        }
+
+        function attachPatientFormEvents() {
+            const form = document.getElementById('patientForm');
+            if (form) {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const patientData = {
+                        name: document.getElementById('patientName').value,
+                        age: document.getElementById('patientAge').value,
+                        gender: document.getElementById('patientGender').value,
+                        bloodGroup: document.getElementById('patientBloodGroup').value,
+                        notes: document.getElementById('patientNotes').value,
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    if (!patientData.name || !patientData.age || !patientData.gender) {
+                        alert('Please fill all required fields!');
+                        return;
+                    }
+                    
+                    savePatientDetails(patientData);
+                    renderApp();
+                });
+            }
+        }
+
+        // ============ MAIN APP FUNCTIONS ============
+        
+        let currentImage = null;
+
+        function attachMainAppEvents() {
+            const uploadArea = document.getElementById('uploadArea');
+            const imageInput = document.getElementById('imageInput');
+            const imagePreview = document.getElementById('imagePreview');
+            const classifyBtn = document.getElementById('classifyBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const resultsDiv = document.getElementById('results');
+
+            if (uploadArea) {
+                uploadArea.addEventListener('click', () => imageInput.click());
+                
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.style.background = '#f0f0ff';
+                });
+
+                uploadArea.addEventListener('dragleave', (e) => {
+                    uploadArea.style.background = 'white';
+                });
+
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.style.background = 'white';
+                    const file = e.dataTransfer.files[0];
+                    if (file && file.type.startsWith('image/')) {
+                        currentImage = file;
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            imagePreview.src = e.target.result;
+                            imagePreview.style.display = 'block';
+                            classifyBtn.disabled = false;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            if (imageInput) {
+                imageInput.addEventListener('change', (e) => {
+                    if (e.target.files && e.target.files[0]) {
+                        const file = e.target.files[0];
+                        currentImage = file;
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            imagePreview.src = e.target.result;
+                            imagePreview.style.display = 'block';
+                            classifyBtn.disabled = false;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            if (clearBtn) {
+                clearBtn.addEventListener('click', () => {
+                    currentImage = null;
+                    imagePreview.style.display = 'none';
+                    imagePreview.src = '';
+                    imageInput.value = '';
+                    classifyBtn.disabled = true;
+                    resultsDiv.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #999;">
+                            <i class="fas fa-robot" style="font-size: 48px; margin-bottom: 10px;"></i>
+                            <p>Upload an image and click classify</p>
+                        </div>
+                    `;
+                });
+            }
+
+            if (classifyBtn) {
+                classifyBtn.addEventListener('click', async () => {
+                    if (!currentImage) {
+                        alert('Please select an image first');
+                        return;
+                    }
+
+                    const isServerOnline = await checkServer();
+                    if (!isServerOnline) {
+                        alert('Backend server is not running! Please start the server first.');
+                        return;
+                    }
+
+                    classifyBtn.disabled = true;
+                    classifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+
+                    resultsDiv.innerHTML = `
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p style="margin-top: 20px;">Analyzing blood cell morphology...</p>
+                        </div>
+                    `;
+
+                    const formData = new FormData();
+                    formData.append('file', currentImage);
+
+                    try {
+                        const response = await fetch(`${API_URL}/classify`, {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok && data.success) {
+                            displayResults(data, resultsDiv);
+                        } else {
+                            throw new Error(data.detail || 'Classification failed');
+                        }
+                    } catch (error) {
+                        resultsDiv.innerHTML = `
+                            <div style="background: #fee; padding: 20px; border-radius: 10px; color: #c33;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <p>Error: ${error.message}</p>
+                                <small>Make sure the backend server is running on port 8000</small>
+                            </div>
+                        `;
+                    } finally {
+                        classifyBtn.disabled = false;
+                        classifyBtn.innerHTML = '<i class="fas fa-chart-line"></i> Classify Blood Cell';
+                    }
+                });
+            }
+        }
+
+        function displayResults(data, resultsDiv) {
+            const prediction = data.prediction;
+            const probabilities = data.all_probabilities;
+            const features = data.morphological_features;
+            const notes = data.analysis_notes;
+
+            let probsHtml = '';
+            for (const [className, confidence] of Object.entries(probabilities)) {
+                probsHtml += `
+                    <div class="prob-item">
+                        <span>${className}</span>
+                        <span style="font-weight: bold; color: #667eea;">${confidence.toFixed(1)}%</span>
+                    </div>
+                `;
+            }
+
+            resultsDiv.innerHTML = `
+                <div class="prediction">
+                    <h3><i class="fas fa-tint"></i> Primary Classification</h3>
+                    <div style="font-size: 24px; font-weight: bold; margin: 10px 0;">${prediction.class}</div>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" style="width: ${prediction.confidence_percent}%">
+                            ${prediction.confidence_percent}%
+                        </div>
+                    </div>
+                </div>
+
+                <div class="features">
+                    <h4><i class="fas fa-microscope"></i> Morphological Features</h4>
+                    <div class="feature-grid">
+                        <div class="feature">
+                            <div class="feature-label">R/G Ratio</div>
+                            <div class="feature-value">${features.red_green_ratio}</div>
+                        </div>
+                        <div class="feature">
+                            <div class="feature-label">Edge Density</div>
+                            <div class="feature-value">${features.edge_density}</div>
+                        </div>
+                        <div class="feature">
+                            <div class="feature-label">Circularity</div>
+                            <div class="feature-value">${features.circularity}</div>
+                        </div>
+                        <div class="feature">
+                            <div class="feature-label">N/C Ratio</div>
+                            <div class="feature-value">${features.nuclear_cytoplasmic_ratio}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4><i class="fas fa-chart-pie"></i> All Probabilities</h4>
+                    <div class="probability-list">
+                        ${probsHtml}
+                    </div>
+                </div>
+
+                <div class="notes">
+                    <i class="fas fa-stethoscope"></i> <strong>Clinical Notes</strong><br>
+                    ${notes}
+                </div>
+            `;
+        }
+
+        async function checkServer() {
+            const statusDiv = document.getElementById('status');
+            if (!statusDiv) return false;
+            
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                if (response.ok) {
+                    statusDiv.innerHTML = '<i class="fas fa-circle" style="color: #2ecc71; font-size: 10px;"></i> Server Online';
+                    return true;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '<i class="fas fa-circle" style="color: #e74c3c; font-size: 10px;"></i> Server Offline - Start backend first';
+            }
+            return false;
+        }
+
+        // ============ GLOBAL FUNCTIONS FOR HTML CALLBACKS ============
+        window.showSignUp = function() {
+            const appDiv = document.getElementById('app');
+            appDiv.innerHTML = renderSignUp();
+            const form = document.getElementById('signupForm');
+            if (form) {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('signupName').value;
+                    const email = document.getElementById('signupEmail').value;
+                    const password = document.getElementById('signupPassword').value;
+                    const confirmPassword = document.getElementById('signupConfirmPassword').value;
+                    
+                    if (password.length < 6) {
+                        alert('Password must be at least 6 characters!');
+                        return;
+                    }
+                    
+                    if (password !== confirmPassword) {
+                        alert('Passwords do not match!');
+                        return;
+                    }
+                    
+                    const result = signUp(email, password, name);
+                    alert(result.message);
+                    if (result.success) {
+                        showSignIn();
+                    } else {
+                        const appDiv = document.getElementById('app');
+                        appDiv.innerHTML = renderSignUp(result.message);
+                        const newForm = document.getElementById('signupForm');
+                        if (newForm) {
+                            newForm.addEventListener('submit', arguments.callee);
+                        }
+                    }
+                });
+            }
+        };
+
+        window.showSignIn = function() {
+            renderApp();
+        };
+
+        window.editPatientDetails = function() {
+            clearPatientDetails();
+            renderApp();
+        };
+
+        // ============ INITIALIZE APP ============
+        initializeStorage();
+        renderApp();
+        
+        // Check server status periodically if in main app
+        setInterval(() => {
+            if (getCurrentUser() && getCurrentPatient()) {
+                checkServer();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
