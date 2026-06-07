@@ -1,6 +1,6 @@
 # HematoVision-Advanced-Blood-Cell-Classification-Using-Transfer-Learning
 
-Abstract
+# Abstract
 
 HemoVision is an intelligent blood cell classification system designed to automate the identification and categorization of various blood cell types using advanced deep learning and computer vision techniques. Accurate blood cell analysis plays a critical role in the diagnosis and monitoring of numerous hematological disorders. Traditional manual microscopic examination is time-consuming, labor-intensive, and prone to human error. To address these limitations, HemoVision leverages state-of-the-art convolutional neural networks (CNNs) and image-processing algorithms to perform precise and efficient blood cell classification.
 
@@ -8,7 +8,7 @@ The system is capable of identifying and classifying eight major blood cell cate
 
 HemoVision aims to improve diagnostic efficiency, reduce manual workload, and support clinical decision-making by delivering fast and reliable blood cell classification. The integration of artificial intelligence into hematology workflows demonstrates the potential of machine learning technologies to enhance medical diagnostics and contribute to better patient outcomes.
 
-Introduction
+# Introduction
 
 Blood cell analysis is a fundamental component of modern medical diagnostics, providing critical information about a patient's health status and aiding in the detection of infections, anemia, leukemia, immune disorders, and other hematological diseases. A complete blood examination typically involves identifying and counting different types of blood cells under a microscope. However, manual examination requires significant expertise and can be affected by fatigue, subjective interpretation, and variability among laboratory technicians.
 
